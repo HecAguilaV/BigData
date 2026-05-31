@@ -1,0 +1,20 @@
+change: BigData
+status: verified
+active_phase: verify
+phases:
+  explore:
+    status: completed
+  propose:
+    status: completed
+  spec:
+    status: completed
+  design:
+    status: completed
+  tasks:
+    status: completed
+  apply:
+    status: completed
+  verify:
+    status: completed
+  archive:
+    status: pending
