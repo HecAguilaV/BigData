@@ -1,6 +1,6 @@
 change: BigData
-status: verified
-active_phase: verify
+status: archived
+active_phase: archive
 phases:
   explore:
     status: completed
@@ -17,4 +17,5 @@ phases:
   verify:
     status: completed
   archive:
-    status: pending
+    status: completed
+

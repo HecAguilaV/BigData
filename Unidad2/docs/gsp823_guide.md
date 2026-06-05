@@ -28,7 +28,7 @@ Para soportar las necesidades operativas de baja latencia y análisis predictivo
 ---
 
 ## 🛠️ Paso 1: Generación de Datos Sintéticos Locales
-1. Asegúrate de tener Python instalado y ejecuta el script generador de datos:
+1. Asegúrate de tener Python instalado y ejecuta el script generador de datos [generate_dataset.py](file:///home/hector/Escritorio/BigData/Unidad2/scripts/generate_dataset.py):
    ```bash
    python3 Unidad2/scripts/generate_dataset.py
    ```
@@ -39,20 +39,40 @@ Para soportar las necesidades operativas de baja latencia y análisis predictivo
 ---
 
 ## 🪣 Paso 2: Ingesta al Data Lake (Cloud Storage)
-1. Autentícate en Google Cloud SDK en tu terminal local:
+
+### 2.1 Preparación de la CLI en Ubuntu
+Si estás en Ubuntu y no tienes instalada la herramienta de línea de comandos `gcloud`, instálala ejecutando:
+```bash
+sudo snap install google-cloud-cli --classic
+```
+
+### 2.2 Autenticación y Configuración de Proyecto
+1. Autentícate en Google Cloud SDK con tu cuenta:
    ```bash
    gcloud auth login
    ```
-2. Configura tu ID de proyecto activo en gcloud:
+2. Si tienes múltiples cuentas configuradas (ej. institucional y personal) y necesitas alternar a la cuenta con los créditos activos, lista las cuentas y selecciona tu correo personal:
    ```bash
-   gcloud config set project <ID_DE_TU_PROYECTO>
+   gcloud auth list
+   gcloud config set account TU_CORREO@gmail.com
    ```
-3. Otorga permisos de ejecución y corre el script de ingesta automatizada:
+3. Lista los proyectos para verificar que tu proyecto `cordillerabi` está disponible en la lista:
+   ```bash
+   gcloud projects list
+   ```
+4. Configura el proyecto activo en tu terminal:
+   ```bash
+   gcloud config set project cordillerabi
+   ```
+
+### 2.3 Ejecución del Script de Ingesta
+1. Asegúrate de dar permisos de ejecución al script [ingest_data.sh](file:///home/hector/Escritorio/BigData/Unidad2/scripts/ingest_data.sh) y córrelo desde el directorio raíz del proyecto:
    ```bash
    chmod +x Unidad2/scripts/ingest_data.sh
    ./Unidad2/scripts/ingest_data.sh
    ```
-4. El script validará las credenciales, creará el bucket `gs://grupo-cordillera-datalake-<project-id>` y subirá los archivos crudos al prefijo `/raw/`.
+   *Nota:* Este script, desarrollado por el **Equipo Desarrollo CordilleraBI**, creará automáticamente el bucket `gs://grupo-cordillera-datalake-cordillerabi` en `us-central1` (vinculándolo a tu facturación activa) y subirá los archivos locales `ventas_historicas.csv` y `sesiones_web.json` a la ruta `/raw/`.
+
 
 ---
 
@@ -69,8 +89,11 @@ Para soportar las necesidades operativas de baja latencia y análisis predictivo
 3. Importa las tablas de origen desde el dataset `grupo_cordillera_raw` en BigQuery.
 4. Implementa las recetas detalladas en el documento de especificación [dataprep_rules.md](file:///home/hector/Escritorio/BigData/Unidad2/docs/dataprep_rules.md):
    * **Limpieza:** Conversión de tipos de datos, corrección del formato en `monto_clp`, y filtrado de valores nulos o negativos.
-   * **Seudonimización (Privacidad):** Encriptación hash SHA-256 no reversible para RUTs e IDs de cliente (`rut_cliente` y `customer_id`) para resguardar la identidad de los usuarios. Enmascaramiento parcial de direcciones IP.
+   * **Seudonimización (Privacidad):** Seudonimización por enmascaramiento de texto (masking) para RUTs e IDs de cliente (`rut_cliente` y `customer_id`) para resguardar la identidad de los usuarios en cumplimiento de la Ley N° 21.719. Enmascaramiento parcial de direcciones IP.
 5. Ejecuta el Job configurando la salida para escribir las tablas refinadas (`fact_ventas` y `fact_sesiones_web`) en el dataset final de BigQuery `grupo_cordillera_dw`.
+   > [!IMPORTANT]
+   > **Consistencia de Regiones:** El dataset de destino `grupo_cordillera_dw` debe crearse en la región específica `us-central1` (ej. `bq mk --location=us-central1 grupo_cordillera_dw`). Si se crea como multirregión `US`, Dataprep fallará al intentar cruzar o escribir datos debido a la restricción de BigQuery de no leer y escribir en distintas regiones.
+
 
 ---
 

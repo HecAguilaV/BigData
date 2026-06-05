@@ -31,7 +31,8 @@ El sistema implementado separa claramente el procesamiento según la latencia re
 ## Gobierno de Datos, Privacidad y Archivado (Cumplimiento Ley N° 21.719)
 
 *   **Alineamiento Legal:** Estricto cumplimiento con la **Ley N° 21.719** de Protección de Datos de Chile.
-*   **Seudonimización:** Cifrado hash SHA-256 no reversible para RUTs de clientes e identificadores de sesión web, y enmascaramiento parcial de direcciones IP.
+*   **Seudonimización:** Enmascaramiento de texto (masking) para RUTs de clientes e identificadores de sesión web (ocultando los dígitos centrales y preservando prefijo y dígito verificador), y enmascaramiento parcial de direcciones IP.
+
 *   **Archivado de Bajo Costo:** Políticas de ciclo de vida de objetos configuradas en GCS para mover archivos crudos a la clase **Coldline** a los 90 días, y a la clase **Archive** a los 365 días, minimizando los costos de retención regulatoria histórica.
 
 ---
@@ -42,7 +43,8 @@ El sistema implementado separa claramente el procesamiento según la latencia re
 *   [`scripts/generate_dataset.py`](file:///home/hector/Escritorio/BigData/Unidad2/scripts/generate_dataset.py): Script en Python que genera localmente 1.5 millones de filas de datos sintéticos realistas de ventas y sesiones web para simular la operación comercial de Grupo Cordillera.
 *   [`scripts/ingest_data.sh`](file:///home/hector/Escritorio/BigData/Unidad2/scripts/ingest_data.sh): Script en bash ejecutable que valida la sesión activa de `gcloud`, crea un bucket de Google Cloud Storage (`gs://grupo-cordillera-datalake-<project-id>`) y sube los datasets de prueba de forma automatizada.
 *   [`sql/create_raw_tables.sql`](file:///home/hector/Escritorio/BigData/Unidad2/sql/create_raw_tables.sql): Consultas SQL DDL para BigQuery que configuran el dataset `grupo_cordillera_raw` y definen las tablas externas conectoras directamente a Cloud Storage.
-*   [`docs/dataprep_rules.md`](file:///home/hector/Escritorio/BigData/Unidad2/docs/dataprep_rules.md): Especificación detallada de las transformaciones y la receta de Cloud Dataprep (Trifacta) para limpiar montos, fechas, anonimizar direcciones IP y aplicar seudonimización mediante **SHA-256** (Ley N° 21.719).
+*   [`docs/dataprep_rules.md`](file:///home/hector/Escritorio/BigData/Unidad2/docs/dataprep_rules.md): Especificación detallada de las transformaciones y la receta de Cloud Dataprep (Trifacta) para limpiar montos, fechas, anonimizar direcciones IP y aplicar seudonimización mediante enmascaramiento de texto (Ley N° 21.719).
+
 *   [`docs/dashboard_design.md`](file:///home/hector/Escritorio/BigData/Unidad2/docs/dashboard_design.md): Plan de diseño del Dashboard en Looker Studio, detallando la configuración de los 4 gráficos requeridos (evolución de ingresos, ventas por sucursal, omnicanalidad y embudo predictivo de sesiones web).
 *   [`docs/gsp823_guide.md`](file:///home/hector/Escritorio/BigData/Unidad2/docs/gsp823_guide.md): Guía de ejecución técnica paso a paso para desplegar, ejecutar y verificar el pipeline analítico completo en GCP para la Evaluación N° 2.
 

@@ -38,9 +38,9 @@ Esta receta toma la tabla externa cruda `grupo_cordillera_raw.ventas_historicas`
 ### Paso 1.4: Seudonimización de Datos Personales (Cumplimiento Ley N° 21.719)
 *   **Problema:** La presencia de `rut_cliente` y `nombre_cliente` expone datos personales sensibles a los analistas de negocio.
 *   **Regla Dataprep (Seudonimización por Diseño):**
-    1.  Aplicar un algoritmo hash criptográfico (SHA-256) sobre la columna `rut_cliente` para crear un identificador anónimo único pero consistente para comportamiento regional: `derive value: sha2(rut_cliente, 256) as: 'id_anonimo_cliente'`
+    1.  Aplicar enmascaramiento sobre la columna `rut_cliente` para crear un identificador anónimo único pero consistente para comportamiento regional, ocultando los dígitos centrales y dejando solo los primeros 3 caracteres y el dígito verificador: `derive value: merge([substring(rut_cliente, 0, 3), 'XXXXXX-', right(rut_cliente, 1)], '') as: 'id_anonimo_cliente'`
     2.  Eliminar las columnas originales `rut_cliente` y `nombre_cliente` del dataset final para evitar re-identificación: `drop col: rut_cliente, nombre_cliente`
-    *   *Nota:* Para las compras anónimas (donde el RUT es vacío), el valor del hash resultante se manejará como nulo o "INVITADO".
+    *   *Nota:* Para las compras anónimas (donde el RUT es vacío), el valor resultante se manejará como nulo o "INVITADO".
 
 ### Paso 1.5: Enriquecimiento de Datos
 *   **Regla Dataprep:**
@@ -60,19 +60,21 @@ Esta receta toma la tabla externa cruda `grupo_cordillera_raw.sesiones_web`, apl
 
 ### Paso 2.2: Seudonimización del ID de Cliente (`customer_id`)
 *   **Regla Dataprep:**
-    1.  Para mantener la coherencia y permitir el cruce de datos omnicanal de forma segura, el `customer_id` (que contiene el RUT) debe hash-earse usando el mismo algoritmo SHA-256: `derive value: if(ismissing([customer_id]), null, sha2(customer_id, 256)) as: 'id_anonimo_cliente'`
+    1.  Para mantener la coherencia y permitir el cruce de datos omnicanal de forma segura, el `customer_id` (que contiene el RUT) debe enmascararse usando la misma regla de seudonimización: `derive value: if(ismissing(customer_id), null, merge([substring(customer_id, 0, 3), 'XXXXXX-', right(customer_id, 1)], '')) as: 'id_anonimo_cliente'`
     2.  Eliminar la columna original: `drop col: customer_id`
 
 ### Paso 2.3: Validación y Normalización de IPs (`ip_address`)
 *   **Regla Dataprep:**
-    1.  Validar formato de IP v4 y extraer la subred (anonimización parcial de IP para cumplimiento de privacidad): `derive value: textformat(ip_address, '###.###.###.0') as: 'ip_anonima'`
-    2.  Eliminar la columna original: `drop col: ip_address`
+    1.  Crear una copia de la columna `ip_address` llamada `ip_anonima` para mantener la privacidad: `derive value: ip_address as: 'ip_anonima'`
+    2.  Anonimizar parcialmente las direcciones IP v4 a nivel de subred reemplazando el último octeto por `.0` usando una expresión regular: `replace col: ip_anonima with: '.0' on: /\.\d+$/`
+    3.  Eliminar la columna original `ip_address`: `drop col: ip_address`
 
 ---
 
 ## 3. Destino de los Datos (BigQuery Data Warehouse)
 
-Una vez ejecutados los flujos de Dataprep de forma automática, los resultados se guardarán en BigQuery en el dataset `grupo_cordillera_dw` bajo el siguiente esquema relacional optimizado para analítica:
+Una vez ejecutados los flujos de Dataprep de forma automática, los resultados se guardarán en BigQuery en el dataset `grupo_cordillera_dw` (que debe crearse en la región `us-central1` para coincidir con el origen) bajo el siguiente esquema relacional optimizado para analítica:
+
 
 *   **Tabla `grupo_cordillera_dw.fact_ventas`:**
     *   `id_transaccion` (STRING - PK)
@@ -101,5 +103,5 @@ Una vez ejecutados los flujos de Dataprep de forma automática, los resultados s
 
 Para garantizar la seguridad, el cumplimiento regulatorio y la eficiencia en costos, se establecen las siguientes directrices de gobierno:
 *   **Cumplimiento Normativo:** Todas las operaciones de procesamiento se alinean estrictamente con la **Ley N° 21.719** de Protección de Datos de Chile.
-*   **Seudonimización en la Transformación:** Se aplica seudonimización mediante funciones hash criptográficas SHA-256 no reversibles a datos personales identificables como `rut_cliente` y `customer_id`. Las direcciones IP se anonimizan parcialmente a nivel de subred (máscara de red `255.255.255.0` o reemplazando el último octeto por `.0`). Los datos identificatorios crudos son descartados (`drop`) y nunca ingresan al Data Warehouse final.
+*   **Seudonimización en la Transformación:** Se aplica seudonimización por enmascaramiento de texto (masking) a datos personales identificables como `rut_cliente` y `customer_id` ocultando los dígitos centrales y preservando solo el prefijo y el dígito verificador. Las direcciones IP se anonimizan parcialmente a nivel de subred reemplazando el último octeto por `.0` usando expresiones regulares. Los datos identificatorios crudos son descartados (`drop`) y nunca ingresan al Data Warehouse final.
 *   **Política de Archivado Automático de Bajo Costo:** Los datos de origen crudos almacenados en los buckets de Cloud Storage (`grupo_cordillera_raw`) están sujetos a una política de ciclo de vida de objetos (Object Lifecycle Management). Los archivos de ingesta diaria con más de 90 días de antigüedad son migrados automáticamente a la clase de almacenamiento **Coldline**, y aquellos con más de 365 días son transferidos a la clase **Archive** para retención histórica regulatoria obligatoria al menor costo posible.

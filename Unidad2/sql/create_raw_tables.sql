@@ -27,7 +27,7 @@ CREATE OR REPLACE EXTERNAL TABLE `grupo_cordillera_raw.ventas_historicas`
 )
 OPTIONS (
   format = 'CSV',
-  uris = ['gs://grupo-cordillera-datalake-*/raw/ventas_historicas.csv'],
+  uris = ['gs://grupo-cordillera-datalake-cordillerabi/raw/ventas_historicas.csv'],
   skip_leading_rows = 1,
   field_delimiter = ',',
   ignore_unknown_values = true,
@@ -48,7 +48,7 @@ CREATE OR REPLACE EXTERNAL TABLE `grupo_cordillera_raw.sesiones_web`
 )
 OPTIONS (
   format = 'NEWLINE_DELIMITED_JSON',
-  uris = ['gs://grupo-cordillera-datalake-*/raw/sesiones_web.json'],
+  uris = ['gs://grupo-cordillera-datalake-cordillerabi/raw/sesiones_web.json'],
   ignore_unknown_values = true,
   description = "Tabla externa conectada a los logs de sesiones web en formato JSON en GCS"
 );

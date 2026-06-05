@@ -13,7 +13,7 @@ BUCKET_NAME="grupo-cordillera-datalake-${PROJECT_ID}"
 REGION="us-central1"
 
 echo "======================================================================"
-echo "  Gentleman Guardian Angel - Ingesta de Datos para Grupo Cordillera"
+echo "  Equipo Desarrollo CordilleraBI - Ingesta de Datos para Grupo Cordillera"
 echo "======================================================================"
 echo "Proyecto GCP Activo: ${PROJECT_ID}"
 echo "Bucket Destino: gs://${BUCKET_NAME}"
