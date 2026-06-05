@@ -44,7 +44,7 @@ El sistema implementado separa claramente el procesamiento según la latencia re
 *   [`sql/create_raw_tables.sql`](file:///home/hector/Escritorio/BigData/Unidad2/sql/create_raw_tables.sql): Consultas SQL DDL para BigQuery que configuran el dataset `grupo_cordillera_raw` y definen las tablas externas conectoras directamente a Cloud Storage.
 *   [`docs/dataprep_rules.md`](file:///home/hector/Escritorio/BigData/Unidad2/docs/dataprep_rules.md): Especificación detallada de las transformaciones y la receta de Cloud Dataprep (Trifacta) para limpiar montos, fechas, anonimizar direcciones IP y aplicar seudonimización mediante **SHA-256** (Ley N° 21.719).
 *   [`docs/dashboard_design.md`](file:///home/hector/Escritorio/BigData/Unidad2/docs/dashboard_design.md): Plan de diseño del Dashboard en Looker Studio, detallando la configuración de los 4 gráficos requeridos (evolución de ingresos, ventas por sucursal, omnicanalidad y embudo predictivo de sesiones web).
-*   [`docs/gsp823_guide.md`](file:///home/hector/Escritorio/BigData/Unidad2/docs/gsp823_guide.md): Guía paso a paso y optimizada para aprobar en pocos minutos el laboratorio práctico **GSP823** de Qwiklabs.
+*   [`docs/gsp823_guide.md`](file:///home/hector/Escritorio/BigData/Unidad2/docs/gsp823_guide.md): Guía de ejecución técnica paso a paso para desplegar, ejecutar y verificar el pipeline analítico completo en GCP para la Evaluación N° 2.
 
 ---
 
