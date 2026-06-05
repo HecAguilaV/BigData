@@ -3,11 +3,11 @@
 .DS_Store
 *.pem
 /data/
-Unidad2/data/
+Unidad2/
 Unidad1/
 Unidad3/
 openspec/
-.gga/
+.gga
 AGENTS.md
 Google Agent Kit.md
 Unidad2/2.1.1 Ingesta de Datos Estructurados y no Estructurados en GCP.pptx
