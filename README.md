@@ -4,13 +4,15 @@ Este repositorio contiene los recursos, scripts y especificaciones técnicas par
 
 ---
 
-## Arquitectura de Solución (Las 5Vs)
+## Arquitectura Híbrida de Solución (Las 5Vs)
 
-* **Volumen:** Procesamiento elástico de más de 1.5 millones de registros utilizando **Google Cloud Storage** y **Google BigQuery**.
+La solución implementa una arquitectura que separa claramente el procesamiento histórico y en tiempo real:
+
+* **Volumen:** Procesamiento elástico de más de 1.5 millones de registros utilizando **Google Cloud Storage** y **Google BigQuery** en la **Capa Batch**.
 * **Variedad:** Ingesta de datos de transacciones de ventas estructuradas (CSV) y logs de navegación semi-estructurados (JSON).
 * **Veracidad:** Calidad de datos por perfilado interactivo en **Cloud Dataprep (Trifacta)** para corregir anomalías monetarias y eliminar registros inválidos.
-* **Velocidad:** Pipeline Batch programado con orquestación integrada que garantiza la consistencia del Data Warehouse semanalmente.
-* **Valor:** Generación de un modelo analítico limpio en BigQuery para alimentar un dashboard ejecutivo en **Looker Studio** y soportar analítica predictiva con **Vertex AI (MLOps)**.
+* **Velocidad:** Pipeline Batch programado para consistencia semanal en el Data Warehouse, integrado con una **Capa Speed** para habilitar procesamiento de baja latencia en predicciones online.
+* **Valor:** Generación de un modelo analítico limpio en BigQuery para alimentar un dashboard en **Looker Studio** y soportar la capa operativa de **Vertex AI (MLOps)** (incluyendo pipelines de entrenamiento, registro de modelos, almacén de características o Feature Store y predicciones online/batch).
 
 ---
 
@@ -49,7 +51,7 @@ Los 4 gráficos elegidos para el dashboard ejecutivo responden directamente a lo
    * Enriquecimiento de fechas (`anio`, `mes`, `dia_semana`).
 5. **Carga al DW:** Escritura de los resultados en `grupo_cordillera_dw.fact_ventas` y `grupo_cordillera_dw.fact_sesiones_web` en la región `us-central1`.
 6. **Visualización:** Consumo del DW en Looker Studio estructurando un panel de 4 gráficos interactivos y predictivos.
-   * **[Dashboard en Producción](https://datastudio.google.com/s/hgQbtg2oLIw)**
+   * **[Dashboard en Producción](https://datastudio.google.com/reporting/0c780fc8-88a6-43a4-8f62-55b5461f6177)**
 
 ---
 

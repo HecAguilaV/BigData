@@ -10,7 +10,7 @@ La selección de **BigQuery** como motor del Data Warehouse se justifica bajo lo
 ## 1. Configuración General del Dashboard
 
 *   **Herramienta:** Looker Studio (anteriormente Google Data Studio).
-*   **URL del Dashboard:** [https://datastudio.google.com/s/hgQbtg2oLIw](https://datastudio.google.com/s/hgQbtg2oLIw)
+*   **URL del Dashboard:** [https://datastudio.google.com/reporting/0c780fc8-88a6-43a4-8f62-55b5461f6177](https://datastudio.google.com/reporting/0c780fc8-88a6-43a4-8f62-55b5461f6177)
 *   **Fuentes de Datos (Data Sources):**
     1.  `grupo_cordillera_dw.fact_ventas` (Conector BigQuery nativo).
     2.  `grupo_cordillera_dw.fact_sesiones_web` (Conector BigQuery nativo).
