@@ -15,15 +15,18 @@ La implementación de **Cloud Dataprep (Trifacta)** y **BigQuery** se justifica 
 ## Arquitectura Híbrida (Capa Batch y Capa Speed)
 
 Las recetas de transformación documentadas en este archivo corresponden a la **Capa Batch** de la arquitectura híbrida:
-*   **Capa Batch:** Procesamiento periódico de datos históricos de ventas y sesiones web mediante Cloud Dataprep, con destino al Data Warehouse en BigQuery (`grupo_cordillera_dw`) para reportes ejecutivos semanales.
-*   **Capa Speed:** Procesamiento en tiempo real de eventos de navegación web mediante Pub/Sub y Cloud Dataflow para decisiones operativas instantáneas (ofertas personalizadas, detección de abandono).
+
+* **Capa Batch:** Procesamiento periódico de datos históricos de ventas y sesiones web mediante Cloud Dataprep, con destino al Data Warehouse en BigQuery (`grupo_cordillera_dw`) para reportes ejecutivos semanales.
+* **Capa Speed:** Procesamiento en tiempo real de eventos de navegación web mediante Pub/Sub y Cloud Dataflow para decisiones operativas instantáneas (ofertas personalizadas, detección de abandono).
 
 ### Capa Operativa de Vertex AI (MLOps)
+
 Para operacionalizar la analítica predictiva sobre los datos transformados por estas recetas, se define la siguiente capa MLOps:
-1.  *Vertex AI Pipelines:* Automatiza el reentrenamiento de modelos predictivos de conversión a partir de los datos limpios en `grupo_cordillera_dw`.
-2.  *Vertex AI Model Registry:* Registra y versiona los modelos entrenados para control de producción.
-3.  *Vertex AI Feature Store:* Centraliza atributos de comportamiento de clientes con latencia sub-segundo.
-4.  *Vertex AI Prediction:* Sirve predicciones online (Capa Speed) y batch (reportes semanales) para las visualizaciones en Looker Studio.
+
+1. *Vertex AI Pipelines:* Automatiza el reentrenamiento de modelos predictivos de conversión a partir de los datos limpios en `grupo_cordillera_dw`.
+2. *Vertex AI Model Registry:* Registra y versiona los modelos entrenados para control de producción.
+3. *Vertex AI Feature Store:* Centraliza atributos de comportamiento de clientes con latencia sub-segundo.
+4. *Vertex AI Prediction:* Sirve predicciones online (Capa Speed) y batch (reportes semanales) para las visualizaciones en Looker Studio.
 
 ---
 
@@ -110,26 +113,26 @@ Esta receta toma la tabla externa cruda `grupo_cordillera_raw.sesiones_web`, apl
 
 Una vez ejecutados los flujos de Dataprep de forma automática, los resultados se guardarán en BigQuery en el dataset `grupo_cordillera_dw` (que debe crearse en la región `us-central1` para coincidir con el origen) bajo el siguiente esquema relacional optimizado para analítica:
 
-* **Tabla `grupo_cordillera_dw.fact_ventas`:**
-  * `id_transaccion` (STRING - PK)
-  * `fecha` (TIMESTAMP)
-  * `id_sucursal` (INT64)
-  * `id_anonimo_cliente` (STRING - FK)
-  * `sku` (STRING)
-  * `cantidad` (INT64)
-  * `monto_clp` (INT64)
-  * `metodo_pago` (STRING)
-  * `anio` (INT64)
-  * `mes` (INT64)
-  * `dia_semana` (INT64)
-* **Tabla `grupo_cordillera_dw.fact_sesiones_web`:**
-  * `session_id` (STRING - PK)
-  * `timestamp` (TIMESTAMP)
-  * `ip_anonima` (STRING)
-  * `id_anonimo_cliente` (STRING - FK)
-  * `event_type` (STRING)
-  * `sku_product` (STRING)
-  * `device` (STRING)
+*   **Tabla `grupo_cordillera_dw.fact_ventas`:**
+    *   `id_transaccion` (STRING - PK)
+    *   `fecha` (DATETIME)
+    *   `dia_semana` (INTEGER)
+    *   `mes` (INTEGER)
+    *   `anio` (DATETIME)
+    *   `id_sucursal` (INTEGER)
+    *   `id_anonimo_cliente` (STRING - FK)
+    *   `sku` (STRING)
+    *   `cantidad` (INTEGER)
+    *   `monto_clp` (INTEGER)
+    *   `metodo_pago` (STRING)
+*   **Tabla `grupo_cordillera_dw.fact_sesiones_web`:**
+    *   `session_id` (STRING - PK)
+    *   `timestamp` (TIMESTAMP)
+    *   `ip_anonima` (STRING)
+    *   `id_anonimo_cliente` (STRING - FK)
+    *   `event_type` (STRING)
+    *   `sku_product` (STRING)
+    *   `device` (STRING)
 
 ---
 

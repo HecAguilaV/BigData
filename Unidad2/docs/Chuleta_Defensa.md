@@ -47,6 +47,15 @@ A continuación se presentan las preguntas conceptuales más recurrentes por par
 ### 🙋‍♂️ Pregunta 8: ¿Por qué arroja un error de esquema al usar el término `null` en una fórmula de Dataprep y cómo se corrige?
 * **Respuesta:** "En el lenguaje Wrangle de Dataprep, escribir `null` sin paréntesis hace que el compilador lo interprete como una referencia a una columna con ese nombre. Para inyectar un valor nulo real, se debe invocar como una función utilizando paréntesis: `null()` o `NULL()`."
 
+### 🙋‍♂️ Pregunta 9: ¿Por qué el dataset final en BigQuery se llama `grupo_cordillera_dw`? ¿Qué significa "dw"?
+* **Respuesta:** "`dw` son las siglas de **Data Warehouse** (Almacén de Datos). Representa la capa analítica final de la arquitectura. A diferencia de la zona `raw` (Data Lake) que tiene datos crudos, el Data Warehouse almacena la versión limpia, estructurada y de alta calidad de la información, lista para ser consumida directamente por los analistas y por Looker Studio."
+
+### 🙋‍♂️ Pregunta 10: ¿Qué función exacta cumplen las recetas `ventas_historicas_recipe` y `sesiones_web_recipe`?
+* **Respuesta:** "Son el núcleo del proceso ETL (Extraer, Transformar y Cargar) de la Capa Batch. `ventas_historicas_recipe` limpia anomalías numéricas en los montos y extrae el año/mes/día. `sesiones_web_recipe` estandariza el tiempo (timestamp) y enmascara las direcciones IP a nivel de subred. Ambas recetas tienen la misión crítica de **seudonimizar** los datos personales (RUT/Customer ID) para cumplir con la Ley N° 21.719 antes de inyectar los registros al Data Warehouse."
+
+### 🙋‍♂️ Pregunta 11: ¿Por qué en la vista de BigQuery los números aparecen como `INTEGER` en lugar de `INT64`?
+* **Respuesta:** "Es exactamente lo mismo. `INT64` es el nombre técnico formal del tipo de dato en el motor SQL de BigQuery, mientras que `INTEGER` es un alias visual que usa la interfaz gráfica de GCP para facilitar la lectura. Ambos representan números enteros de 64 bits. Lo mismo ocurre con el tipo `DATETIME`."
+
 ---
 
 ## 3. Glosario de Conceptos Clave

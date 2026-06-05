@@ -161,9 +161,9 @@ Se implementaron recetas en Cloud Dataprep basadas en las pautas de [dataprep_ru
 * **Anonimización e IP Masking:** Seudonimización del RUT y enmascaramiento del último octeto de las direcciones IP en los logs web (`ip_address -> ip_anonima` reemplazando el último octeto por `.0` mediante expresiones regulares).
 
 ### 4.4. Carga al Data Warehouse (BigQuery DW)
-Los resultados procesados por las recetas se escriben directamente en el dataset final `grupo_cordillera_dw` en las tablas físicas:
-* `grupo_cordillera_dw.fact_ventas`
-* `grupo_cordillera_dw.fact_sesiones_web`
+Los resultados procesados por las recetas se escriben directamente en el dataset final `grupo_cordillera_dw` en las tablas físicas (con esquemas inferidos validados):
+* **`grupo_cordillera_dw.fact_ventas`**: `id_transaccion` (STRING), `fecha` (DATETIME), `dia_semana` (INTEGER), `mes` (INTEGER), `anio` (DATETIME), `id_sucursal` (INTEGER), `id_anonimo_cliente` (STRING), `sku` (STRING), `cantidad` (INTEGER), `monto_clp` (INTEGER), `metodo_pago` (STRING).
+* **`grupo_cordillera_dw.fact_sesiones_web`**: `session_id` (STRING), `timestamp` (TIMESTAMP), `ip_anonima` (STRING), `id_anonimo_cliente` (STRING), `event_type` (STRING), `sku_product` (STRING), `device` (STRING).
 
 > [!IMPORTANT]
 > **Consistencia de Regiones:** Para evitar errores de transferencia, el dataset de destino `grupo_cordillera_dw` fue recreado estrictamente en la misma región que las fuentes crudas (`us-central1`). BigQuery restringe la lectura y escritura cruzada entre diferentes regiones geográficas.
