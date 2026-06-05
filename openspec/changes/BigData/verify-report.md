@@ -58,3 +58,12 @@ El sistema implementado separa claramente el procesamiento según la latencia re
     *   Verificamos que el archivo de ventas históricas contenga transacciones con los formatos sucios simulados para probar la receta de limpieza en Dataprep, y que los logs web tengan la estructura NDJSON estándar de la industria.
 3.  **Seguridad y Prácticas de Gobierno:**
     *   Los scripts garantizan por diseño el cumplimiento de la Ley N° 21.719 mediante la lógica de seudonimización detallada en el documento de Dataprep, ocultando datos de carácter personal como el RUT y nombres de los clientes antes de cargarlos al Data Warehouse.
+
+---
+
+## Anexo: Prototipo de Visualización (Dashboard Ejecutivo en Looker Studio)
+
+A continuación se presenta el prototipo visual del panel de control ejecutivo desarrollado para Grupo Cordillera. Este diseño sirve como el estándar visual final a implementar en Looker Studio:
+
+![Mockup del Dashboard Ejecutivo de Grupo Cordillera](/home/hector/.gemini/antigravity-ide/brain/d6d32724-a7aa-42d4-a7b2-8f25edb09158/grupo_cordillera_dashboard_mockup_1780638979151.png)
+
