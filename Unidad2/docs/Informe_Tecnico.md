@@ -210,7 +210,7 @@ El pipeline está diseñado para ser tolerante a fallos y reutilizable:
 
 * **Control de Errores:** En Dataprep se aplican filtros de calidad de datos para eliminar registros con montos negativos (`monto_clp <= 0`), cantidades faltantes o erróneas (`cantidad <= 0` o valores nulos). Los registros con inconsistencias se descartan del flujo analítico sin interrumpir la ejecución del Job.
 * **Control de Duplicidad:** Se aplica la regla de deduplicación integrada de Dataprep basada en la columna clave `id_transaccion` para asegurar que las re-ejecuciones no dupliquen transacciones históricas. En el destino de BigQuery, el Job de Dataprep está configurado con la opción **Drop table every run**, garantizando una reconstrucción limpia y reproducible.
-* **Registro de Actividad (Trazabilidad):** Cloud Dataprep delega la ejecución de la infraestructura a **Google Cloud Dataflow**. Todo el log detallado de procesamiento, número de registros leídos, transformados y escritos queda registrado en **Cloud Logging**, permitiendo auditar ejecuciones pasadas.
+* **Registro de Actividad y Procesamiento Distribuido:** Las recetas visuales creadas en Cloud Dataprep son compiladas automáticamente a código de **Apache Beam** y ejecutadas de forma nativa sobre **Google Cloud Dataflow**. Esto permite un procesamiento elástico y **Serverless** (sin administración manual de clústeres). Todo el log detallado queda registrado en **Cloud Logging**, permitiendo auditar ejecuciones pasadas.
 
 ---
 
