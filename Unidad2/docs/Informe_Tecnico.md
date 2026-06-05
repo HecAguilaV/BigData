@@ -204,6 +204,13 @@ Para democratizar el acceso a los datos procesados, se estructuró un Dashboard 
 3. **Gráfico 3: Participación Omnicanal:** Gráfico de anillo que muestra la proporción de transacciones realizadas en canales físicos versus canales digitales (Web).
 4. **Gráfico 4: Embudo de Conversión Web Predictivo:** Embudo visual que detalla la conversión desde la visita inicial hasta la transacción, incorporando proyecciones calculadas con los modelos predictivos de Vertex AI.
 
+### 7.1. Justificación de Negocio de las Visualizaciones Seleccionadas
+La elección de estos 4 componentes gráficos no es arbitraria; está diseñada para responder a preguntas críticas del negocio:
+* El gráfico de **Evolución Temporal** demuestra el valor histórico de los datos (la "V" de Valor en Big Data), evidenciando el crecimiento y la estacionalidad de la demanda.
+* El ranking de **Desempeño por Sucursal** es una herramienta de micro-gestión para detectar ineficiencias o premiar a las mejores tiendas locales.
+* El anillo de **Participación Omnicanal** evalúa directamente el éxito de la transformación digital de la empresa, validando el impacto del e-commerce.
+* El **Embudo Predictivo** ataca el problema más importante del negocio online: entender en qué paso se pierden los clientes (Churn) y usar modelos de Machine Learning (MLOps) para proyectar cuántos terminarán comprando, optimizando la logística de distribución.
+
 ---
 
 ## 8. Conclusiones

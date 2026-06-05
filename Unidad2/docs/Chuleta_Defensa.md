@@ -56,6 +56,9 @@ A continuación se presentan las preguntas conceptuales más recurrentes por par
 ### 🙋‍♂️ Pregunta 11: ¿Por qué en la vista de BigQuery los números aparecen como `INTEGER` en lugar de `INT64`?
 * **Respuesta:** "Es exactamente lo mismo. `INT64` es el nombre técnico formal del tipo de dato en el motor SQL de BigQuery, mientras que `INTEGER` es un alias visual que usa la interfaz gráfica de GCP para facilitar la lectura. Ambos representan números enteros de 64 bits. Lo mismo ocurre con el tipo `DATETIME`."
 
+### 🙋‍♂️ Pregunta 12: ¿Por qué se eligieron exactamente estos 4 gráficos para el dashboard?
+* **Respuesta:** "Porque cada uno ataca una métrica estratégica (KPI) del negocio: (1) La línea de tiempo evidencia el **Valor** histórico de los datos y estacionalidad. (2) El ranking de barras permite la micro-gestión de las sucursales físicas. (3) El anillo omnicanal valida la estrategia de digitalización comparando físico vs web. (4) El embudo detecta el punto exacto de fuga de clientes online y, combinado con Machine Learning (MLOps), permite proyectar las compras futuras para planificar la logística."
+
 ---
 
 ## 3. Glosario de Conceptos Clave

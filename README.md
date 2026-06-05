@@ -28,6 +28,16 @@ Este repositorio contiene los recursos, scripts y especificaciones técnicas par
 
 ---
 
+## 📊 Justificación Analítica de Visualizaciones (Looker Studio)
+
+Los 4 gráficos elegidos para el dashboard ejecutivo responden directamente a los objetivos comerciales estratégicos de **Grupo Cordillera**:
+1. **Evolución Temporal de Ingresos (Líneas):** Permite a la gerencia identificar tendencias estacionales, el impacto de campañas a lo largo del tiempo y el crecimiento general del negocio de forma intuitiva.
+2. **Desempeño por Sucursal (Barras Horizontales):** Visibiliza instantáneamente el ranking comercial (tiendas estrella vs. tiendas con bajo rendimiento) para la toma de decisiones operativas locales.
+3. **Participación Omnicanal (Anillo):** Mide la tasa de penetración del canal digital (E-commerce) frente al canal tradicional (Tienda Física), un KPI crítico para validar la estrategia de transformación digital.
+4. **Embudo Predictivo Web (Funnel):** Identifica el punto exacto de fuga de los clientes durante la navegación online (desde la vista de producto hasta la compra), permitiendo calcular la tasa de conversión y anticipar la demanda de stock logístico mediante modelos de Vertex AI.
+
+---
+
 ## 🚀 Resumen del Flujo de Ejecución
 
 1. **Generación de Datos:** Ejecución de `generate_dataset.py` para crear los archivos CSV y JSON locales.
