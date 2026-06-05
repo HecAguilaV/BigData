@@ -237,7 +237,7 @@ Para mitigar costos de almacenamiento de datos de retención regulatoria histór
 
 Para democratizar el acceso a los datos procesados, se estructuró un Dashboard analítico interactivo basado en las especificaciones de [dashboard_design.md](file:///home/hector/Escritorio/BigData/Unidad2/docs/dashboard_design.md), conectando las fuentes de datos directamente a las tablas físicas de `grupo_cordillera_dw`:
 
-> 🔗 **Dashboard en Producción:** https://datastudio.google.com/reporting/0c780fc8-88a6-43a4-8f62-55b5461f6177
+> **Dashboard en Producción:** https://datastudio.google.com/reporting/0c780fc8-88a6-43a4-8f62-55b5461f6177
 
 1. **Gráfico 1: Evolución Temporal de Ventas:** Gráfico de línea que muestra las ventas consolidadas diarias/mensuales, permitiendo filtrar por año o sucursal.
 2. **Gráfico 2: Desempeño Comercial por Sucursal:** Gráfico de barras horizontales ordenadas de forma descendente para identificar rápidamente las sucursales con mayores ingresos acumulados.
