@@ -41,6 +41,12 @@ A continuación se presentan las preguntas conceptuales más recurrentes por par
 ### 🙋‍♂️ Pregunta 6: ¿Cómo se optimizan los costos de almacenamiento del Data Lake?
 * **Respuesta:** "Se definieron políticas de Object Lifecycle Management en Cloud Storage. Los archivos crudos de ingesta se mueven automáticamente de la clase Standard a **Coldline** después de 90 días, y a la clase **Archive** a los 365 días, reduciendo los costos de almacenamiento para datos de retención regulatoria histórica obligatoria."
 
+### 🙋‍♂️ Pregunta 7: ¿Por qué en Cloud Dataprep a veces desaparecen temporalmente las columnas al escribir una fórmula?
+* **Respuesta:** "Es un comportamiento visual de la interfaz. Al previsualizar una fórmula de derivación (como `Derive`), Dataprep enfoca la pantalla únicamente en la nueva columna calculada para facilitar la revisión del resultado. Una vez que se hace clic en 'Add' para agregar el paso a la receta, todas las columnas de la tabla vuelven a visualizarse normalmente."
+
+### 🙋‍♂️ Pregunta 8: ¿Por qué arroja un error de esquema al usar el término `null` en una fórmula de Dataprep y cómo se corrige?
+* **Respuesta:** "En el lenguaje Wrangle de Dataprep, escribir `null` sin paréntesis hace que el compilador lo interprete como una referencia a una columna con ese nombre. Para inyectar un valor nulo real, se debe invocar como una función utilizando paréntesis: `null()` o `NULL()`."
+
 ---
 
 ## 3. Glosario de Conceptos Clave
