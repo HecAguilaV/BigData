@@ -3,7 +3,6 @@
 .DS_Store
 *.pem
 /data/
-Unidad2/
 Unidad1/
 Unidad3/
 openspec/
@@ -13,3 +12,5 @@ Google Agent Kit.md
 Unidad2/2.1.1 Ingesta de Datos Estructurados y no Estructurados en GCP.pptx
 Unidad2/Evaluacion/
 Unidad2/docs/Chuleta_Defensa.md
+Unidad2/data/*.csv
+Unidad2/data/*.json
