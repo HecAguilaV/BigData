@@ -57,3 +57,7 @@ Los 4 gráficos elegidos para el dashboard ejecutivo responden directamente a lo
 
 * **Seudonimización:** Enmascaramiento irreversible y consistente (`rut_cliente` -> `id_anonimo_cliente`) asegurando que ningún dato personal sensible llegue al Data Warehouse o al Dashboard.
 * **Ciclo de Vida en Storage:** Regla de ciclo de vida configurada para migrar automáticamente de clase *Standard* a *Coldline* a los 90 días, y a *Archive* a los 365 días para la retención regulatoria de bajo costo.
+---
+
+**Héctor Aguila**
+
