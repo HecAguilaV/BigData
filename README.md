@@ -49,6 +49,7 @@ Los 4 gráficos elegidos para el dashboard ejecutivo responden directamente a lo
    * Enriquecimiento de fechas (`anio`, `mes`, `dia_semana`).
 5. **Carga al DW:** Escritura de los resultados en `grupo_cordillera_dw.fact_ventas` y `grupo_cordillera_dw.fact_sesiones_web` en la región `us-central1`.
 6. **Visualización:** Consumo del DW en Looker Studio estructurando un panel de 4 gráficos interactivos y predictivos.
+   * 🔗 **[Dashboard en Producción](https://datastudio.google.com/s/rdobu0geO2M)**
 
 ---
 

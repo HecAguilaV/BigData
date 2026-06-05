@@ -10,6 +10,7 @@ La selección de **BigQuery** como motor del Data Warehouse se justifica bajo lo
 ## 1. Configuración General del Dashboard
 
 *   **Herramienta:** Looker Studio (anteriormente Google Data Studio).
+*   **URL del Dashboard:** [https://datastudio.google.com/s/rdobu0geO2M](https://datastudio.google.com/s/rdobu0geO2M)
 *   **Fuentes de Datos (Data Sources):**
     1.  `grupo_cordillera_dw.fact_ventas` (Conector BigQuery nativo).
     2.  `grupo_cordillera_dw.fact_sesiones_web` (Conector BigQuery nativo).
@@ -39,19 +40,21 @@ La selección de **BigQuery** como motor del Data Warehouse se justifica bajo lo
 ### Gráfico 3: Participación Omnicanal (Físico vs. Digital)
 *   **Tipo de Gráfico:** Gráfico de Anillo (Donut Chart).
 *   **Origen de Datos:** `grupo_cordillera_dw.fact_ventas` (con campo calculado).
-*   **Dimensión (Campo Calculado - Canal):**
-    *   *Fórmula:* `CASE WHEN id_sucursal = 0 THEN "E-Commerce" ELSE "Tienda Física" END`
-    *   *(Nota: En la ingesta, las compras web se registran con id_sucursal = 0).*
+*   **Dimensión (Campo Calculado - `Canal de Venta`):**
+    *   *Fórmula:* `CASE WHEN id_sucursal <= 5 THEN "E-Commerce" ELSE "Tienda Física" END`
+    *   *(Nota: En datos sintéticos el generador no asignó `id_sucursal = 0` para ventas web. Se ajustó la fórmula para simular la distribución omnicanal. En producción se usaría un flag de canal real del sistema transaccional).*
 *   **Métrica:** Recuento de transacciones (`id_transaccion`) o suma de `monto_clp`.
 *   **Objetivo de Negocio:** Medir la tasa de penetración del e-commerce frente a las compras tradicionales en sucursal física.
 
 ### Gráfico 4: Embudo de Conversión Web y Proyección Predictiva (Capa Speed + BigQuery ML)
 *   **Tipo de Gráfico:** Gráfico de Barras Apiladas / Embudo (Funnel Chart).
 *   **Origen de Datos:** Combinación de `fact_sesiones_web` y consultas predictivas de BigQuery ML.
-*   **Dimensiones (Etapas del Embudo - `event_type`):**
-    1.  *Visita:* `view_product`
-    2.  *Interés:* `add_to_cart`
-    3.  *Conversión:* `purchase`
+*   **Dimensión (Campo Calculado - `Etapa del Cliente`):**
+    *   *Fórmula:* `CASE WHEN event_type = "view_product" THEN "1. Visita Producto" WHEN event_type = "add_to_cart" THEN "2. Añade al Carrito" WHEN event_type = "purchase" THEN "3. Compra" END`
+    *   Etapas resultantes:
+        1.  *1. Visita Producto* (equivalente a `view_product`)
+        2.  *2. Añade al Carrito* (equivalente a `add_to_cart`)
+        3.  *3. Compra* (equivalente a `purchase`)
 *   **Métrica:** Cantidad de sesiones únicas (`session_id`).
 *   **Línea de Proyección Predictiva:** Línea punteada que muestra la tasa de conversión esperada basada en el comportamiento del último trimestre (calculada mediante modelos de clasificación en BigQuery ML).
 *   **Integración con MLOps (Vertex AI):** Para operacionalizar este modelo analítico, el pipeline se integra con la capa operativa de **Vertex AI (MLOps)**:
@@ -66,9 +69,8 @@ La selección de **BigQuery** como motor del Data Warehouse se justifica bajo lo
 ## 3. Tarjetas de Resumen Rápido (Scorecards)
 
 Para dar un contexto ejecutivo inmediato, se colocarán tres tarjetas de métricas clave en la parte superior:
-1.  **Ventas Totales (CLP):** Suma acumulada de ingresos filtrada por el periodo seleccionado.
-2.  **Transacciones Totales:** Cantidad total de compras completadas.
-3.  **Ticket Promedio:** Valor promedio por compra, calculado como `SUM(monto_clp) / COUNT(id_transaccion)`.
+1.  **Monto Facturado a la Fecha:** Suma acumulada de `monto_clp` (Métrica: SUM). Muestra el ingreso total global del grupo ($1.838.769.817.641 CLP).
+2.  **Total Transacciones:** Recuento de `id_transaccion` (Métrica: CTD). Muestra la cantidad total de compras completadas (1.200.000 registros).
 
 ---
 

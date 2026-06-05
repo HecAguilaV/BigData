@@ -30,12 +30,20 @@
    * 4.2. Definición del Esquema RAW en BigQuery
    * 4.3. Recetas de Transformación y Calidad de Datos (Cloud Dataprep)
    * 4.4. Carga al Data Warehouse (BigQuery DW)
+   * 4.5. Diagrama de Ejecución Secuencial del Pipeline Batch
 5. **Control de Errores, Duplicidad y Registro de Actividad**
 6. **Gobierno de Datos, Privacidad y Archivado (Cumplimiento Ley N° 21.719)**
    * 6.1. Cumplimiento de la Ley N° 21.719 (Seudonimización)
    * 6.2. Política de Archivado de Bajo Costo en GCS
 7. **Diseño de Visualizaciones (Dashboard en Looker Studio)**
-8. **Conclusiones**
+   * 7.1. Justificación de Negocio de las Visualizaciones Seleccionadas
+   * 7.2. Implementación Técnica del Dashboard (Campos Calculados)
+   * 7.3. Tarjetas de Indicadores Clave (KPIs)
+   * 7.4. Diagrama de Componentes del Dashboard
+8. **Hallazgos, Lecciones Aprendidas y Diferencias con la Propuesta Inicial**
+   * 8.1. Hallazgos Técnicos durante la Implementación
+   * 8.2. Diferencias entre la Propuesta Inicial y la Implementación Final
+9. **Conclusiones**
 
 ---
 
@@ -168,6 +176,19 @@ Los resultados procesados por las recetas se escriben directamente en el dataset
 > [!IMPORTANT]
 > **Consistencia de Regiones:** Para evitar errores de transferencia, el dataset de destino `grupo_cordillera_dw` fue recreado estrictamente en la misma región que las fuentes crudas (`us-central1`). BigQuery restringe la lectura y escritura cruzada entre diferentes regiones geográficas.
 
+### 4.5. Diagrama de Ejecución Secuencial del Pipeline Batch
+
+El siguiente diagrama resume el flujo real de ejecución del pipeline tal como fue implementado, con los nombres concretos de los scripts, datasets y herramientas utilizadas en cada fase:
+
+```mermaid
+flowchart TD
+    A["1. generate_dataset.py\n1.2M ventas CSV + 300K sesiones JSON"] --> B["2. ingest_data.sh\nCarga a gs://grupo-cordillera-datalake/raw/"]
+    B --> C["3. create_raw_tables.sql\nTablas externas en grupo_cordillera_raw"]
+    C --> D["4. Cloud Dataprep\nventas_historicas_recipe\nsesiones_web_recipe"]
+    D --> E["5. BigQuery DW\ngrupo_cordillera_dw\nfact_ventas + fact_sesiones_web"]
+    E --> F["6. Looker Studio\nDashboard Ejecutivo\nGrupo Cordillera"]
+```
+
 ---
 
 ## 5. Control de Errores, Duplicidad y Registro de Actividad
@@ -199,6 +220,8 @@ Para mitigar costos de almacenamiento de datos de retención regulatoria histór
 
 Para democratizar el acceso a los datos procesados, se estructuró un Dashboard analítico interactivo basado en las especificaciones de [dashboard_design.md](file:///home/hector/Escritorio/BigData/Unidad2/docs/dashboard_design.md), conectando las fuentes de datos directamente a las tablas físicas de `grupo_cordillera_dw`:
 
+> 🔗 **Dashboard en Producción:** [https://datastudio.google.com/s/rdobu0geO2M](https://datastudio.google.com/s/rdobu0geO2M)
+
 1. **Gráfico 1: Evolución Temporal de Ventas:** Gráfico de línea que muestra las ventas consolidadas diarias/mensuales, permitiendo filtrar por año o sucursal.
 2. **Gráfico 2: Desempeño Comercial por Sucursal:** Gráfico de barras horizontales ordenadas de forma descendente para identificar rápidamente las sucursales con mayores ingresos acumulados.
 3. **Gráfico 3: Participación Omnicanal:** Gráfico de anillo que muestra la proporción de transacciones realizadas en canales físicos versus canales digitales (Web).
@@ -211,10 +234,76 @@ La elección de estos 4 componentes gráficos no es arbitraria; está diseñada 
 * El anillo de **Participación Omnicanal** evalúa directamente el éxito de la transformación digital de la empresa, validando el impacto del e-commerce.
 * El **Embudo Predictivo** ataca el problema más importante del negocio online: entender en qué paso se pierden los clientes (Churn) y usar modelos de Machine Learning (MLOps) para proyectar cuántos terminarán comprando, optimizando la logística de distribución.
 
+### 7.2. Implementación Técnica del Dashboard (Campos Calculados)
+
+Durante la construcción del dashboard, se crearon **campos calculados** directamente en Looker Studio para enriquecer la capa de presentación sin modificar las tablas del Data Warehouse:
+
+* **Campo `Canal de Venta`** (sobre `fact_ventas`):
+  * *Fórmula:* `CASE WHEN id_sucursal <= 5 THEN "E-Commerce" ELSE "Tienda Física" END`
+  * *Propósito:* Clasificar transacciones por canal de venta para el gráfico de participación omnicanal.
+  * *Nota:* En los datos sintéticos el generador no asignó `id_sucursal = 0` para ventas web; se ajustó la fórmula para la simulación visual. En producción, el sistema transaccional inyectaría un flag de canal real.
+
+* **Campo `Etapa del Cliente`** (sobre `fact_sesiones_web`):
+  * *Fórmula:* `CASE WHEN event_type = "view_product" THEN "1. Visita Producto" WHEN event_type = "add_to_cart" THEN "2. Añade al Carrito" WHEN event_type = "purchase" THEN "3. Compra" END`
+  * *Propósito:* Traducir los valores crudos de `event_type` a etiquetas legibles en español con orden secuencial lógico para el embudo de conversión.
+
+### 7.3. Tarjetas de Indicadores Clave (KPIs)
+
+En la cabecera del dashboard se dispusieron dos tarjetas de resultados con métricas agregadas globales:
+1. **Total Transacciones:** Recuento de `id_transaccion` sobre `fact_ventas` (1.200.000 registros totales).
+2. **Monto Facturado a la Fecha:** Suma de `monto_clp` sobre `fact_ventas` ($1.838.769.817.641 CLP acumulados).
+
+### 7.4. Diagrama de Componentes del Dashboard
+
+```mermaid
+graph TD
+    subgraph Dashboard["Dashboard Ejecutivo - Grupo Cordillera"]
+        subgraph KPIs["Indicadores KPI"]
+            T1["Total Transacciones: 1.200.000"]
+            T2["Monto Facturado: $1.838 B CLP"]
+        end
+        subgraph Graficos["Graficos Analiticos"]
+            G1["Evolucion Mensual de Ingresos"]
+            G2["Ranking Comercial por Sucursal"]
+            G3["Participacion Omnicanal"]
+            G4["Embudo de Conversion Web"]
+        end
+    end
+```
+
 ---
 
-## 8. Conclusiones
+## 8. Hallazgos, Lecciones Aprendidas y Diferencias con la Propuesta Inicial
+
+A lo largo de la implementación del pipeline se documentaron los siguientes hallazgos técnicos y desviaciones respecto al diseño propuesto originalmente:
+
+### 8.1. Hallazgos Técnicos durante la Implementación
+
+| Hallazgo | Causa Raíz | Solución Aplicada |
+|----------|------------|-------------------|
+| Error de regiones cruzadas en BigQuery al ejecutar el Job de Dataprep | El dataset `grupo_cordillera_dw` fue creado en la multirregión `US` mientras las fuentes estaban en `us-central1` | Recrear el dataset de destino con `bq mk --location=us-central1` |
+| Error de esquema con `null` en fórmulas de Dataprep | Dataprep interpreta `null` como nombre de columna, no como valor nulo | Usar la función `null()` con paréntesis |
+| Tipos de datos `INTEGER` vs `INT64` en la consola de BigQuery | `INTEGER` es un alias visual que usa la interfaz gráfica de GCP | No requiere corrección; ambos son equivalentes (`INT64`) |
+| Distribución uniforme de ventas por sucursal en el dashboard | Generación de datos con `random.randint(1, 30)` que distribuye equitativamente | Explicable por la Ley de los Grandes Números aplicada a 1.2M de registros sintéticos |
+| Gráfico omnicanal muestra 100% Tienda Física | El script generador nunca asignó `id_sucursal = 0` como indicador de canal web | Ajuste de fórmula en Looker Studio: `id_sucursal <= 5` para simulación visual |
+
+### 8.2. Diferencias entre la Propuesta Inicial y la Implementación Final
+
+| Aspecto | Propuesta Inicial | Implementación Real | Justificación |
+|---------|-------------------|---------------------|---------------|
+| Seudonimización | Hash SHA-256 irreversible | Enmascaramiento parcial (`123XXXXXX-K`) | Conserva utilidad analítica para agrupaciones de negocio |
+| Fórmula Canal de Venta | `id_sucursal = 0` para E-Commerce | `id_sucursal <= 5` | Ajuste por datos sintéticos sin flag de canal web |
+| Tarjetas KPI | 3 tarjetas (Ventas, Transacciones, Ticket Promedio) | 2 tarjetas (Monto Facturado y Total Transacciones) | Simplificación para claridad ejecutiva |
+| Tipo `fecha` en DW | `TIMESTAMP` | `DATETIME` | Tipo inferido automáticamente por Dataprep |
+| Tipo numéricos en DW | `INT64` | `INTEGER` (alias equivalente) | Representación visual de la consola de GCP |
+| Etiquetas del Embudo | Valores crudos en inglés (`view_product`, `add_to_cart`) | Campo calculado `Etapa del Cliente` con etiquetas en español | Mejora de legibilidad para stakeholders hispanoparlantes |
+
+---
+
+## 9. Conclusiones
 
 La solución implementada dota a **Grupo Cordillera** de un pipeline analítico batch automatizado, seguro y escalable. A través de la ingesta automatizada, la estructuración de tablas RAW, la limpieza interactiva con Cloud Dataprep y la persistencia en BigQuery, se ha transformado información dispersa en un Data Warehouse gobernado y listo para Looker Studio.
 
 Se cumplieron a cabalidad los requisitos técnicos evaluados: control de duplicados, gestión de errores de ingesta, cumplimiento regulatorio según la Ley N° 21.719 (seudonimización) y el diseño predictivo integrado de MLOps. La correcta configuración de regiones en `us-central1` garantiza la estabilidad operacional de la solución en la nube de GCP.
+
+La implementación reveló diferencias naturales entre la propuesta arquitectónica inicial y la ejecución real (documentadas en la Sección 8). Estas diferencias reflejan la realidad del trabajo de un Data Engineer: los planes se adaptan iterativamente a las restricciones del entorno, los datos y las herramientas. La capacidad de documentar, justificar y resolver estas desviaciones constituye una competencia central de la disciplina de Big Data.

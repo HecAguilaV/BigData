@@ -59,6 +59,15 @@ A continuación se presentan las preguntas conceptuales más recurrentes por par
 ### 🙋‍♂️ Pregunta 12: ¿Por qué se eligieron exactamente estos 4 gráficos para el dashboard?
 * **Respuesta:** "Porque cada uno ataca una métrica estratégica (KPI) del negocio: (1) La línea de tiempo evidencia el **Valor** histórico de los datos y estacionalidad. (2) El ranking de barras permite la micro-gestión de las sucursales físicas. (3) El anillo omnicanal valida la estrategia de digitalización comparando físico vs web. (4) El embudo detecta el punto exacto de fuga de clientes online y, combinado con Machine Learning (MLOps), permite proyectar las compras futuras para planificar la logística."
 
+### 🙋‍♂️ Pregunta 13: ¿Qué son los "campos calculados" en Looker Studio y por qué se usaron?
+* **Respuesta:** "Son fórmulas que se crean directamente en la capa de visualización, SIN modificar las tablas del Data Warehouse. Los usamos para crear el campo `Canal de Venta` (que clasifica sucursales en E-Commerce vs Tienda Física) y `Etapa del Cliente` (que traduce los event_type crudos a etiquetas legibles en español). La ventaja es que el DW permanece limpio y genérico, mientras la capa de presentación se adapta al idioma y contexto del negocio."
+
+### 🙋‍♂️ Pregunta 14: ¿Por qué las barras de sucursales en el ranking muestran montos casi idénticos?
+* **Respuesta:** "Porque los datos son sintéticos, generados con distribución uniforme (`random.randint`). Con más de 1.2 millones de registros, la Ley de los Grandes Números garantiza que cada sucursal recibe estadísticamente la misma cantidad de ventas. En datos reales de Grupo Cordillera, las sucursales de Santiago dominarían el ranking y las de regiones más pequeñas tendrían barras significativamente menores."
+
+### 🙋‍♂️ Pregunta 15: ¿Qué diferencias hubo entre la propuesta inicial y lo que realmente se implementó?
+* **Respuesta:** "Hubo tres diferencias principales: (1) La seudonimización se implementó con enmascaramiento parcial en vez de Hash SHA-256, porque conserva utilidad analítica para agrupaciones de negocio. (2) Los tipos de datos `fecha` y `anio` quedaron como DATETIME en lugar de TIMESTAMP, por la inferencia automática de Dataprep. (3) El campo Canal de Venta se ajustó de `id_sucursal = 0` a `id_sucursal <= 5` porque los datos sintéticos no tenían el flag de canal web. Todas estas diferencias se documentaron y justificaron técnicamente en la Sección 8 del Informe."
+
 ---
 
 ## 3. Glosario de Conceptos Clave
@@ -67,6 +76,11 @@ A continuación se presentan las preguntas conceptuales más recurrentes por par
 * **Tabla Externa:** Tabla de BigQuery que no almacena los datos de forma nativa, sino que consulta directamente archivos almacenados en Cloud Storage.
 * **Seudonimización:** Tratamiento de datos personales de manera que no puedan atribuirse a un interesado sin utilizar información adicional guardada por separado.
 * **MLOps (Vertex AI):** Operaciones de Machine Learning. Conjunto de prácticas que estandarizan y automatizan el ciclo de vida de los modelos predictivos en la nube.
+* **Campo Calculado:** Fórmula definida en la capa de visualización (Looker Studio) que crea un nuevo campo derivado sin modificar las tablas de origen en el Data Warehouse.
+* **Cross-Filtering (Filtro Cruzado):** Funcionalidad interactiva de dashboards de BI donde al hacer clic en un elemento de un gráfico, todos los demás gráficos se filtran automáticamente por esa selección.
+* **KPI (Key Performance Indicator):** Métrica cuantificable que mide el rendimiento de un proceso o área de negocio respecto a un objetivo estratégico.
+* **Data Warehouse (DW):** Almacén de datos estructurado y optimizado para consultas analíticas. Contiene datos limpios, transformados y gobernados.
+* **Embudo de Conversión:** Modelo visual que representa las etapas secuenciales por las que transita un cliente hasta completar una compra, identificando los puntos de fuga.
 
 ---
 
