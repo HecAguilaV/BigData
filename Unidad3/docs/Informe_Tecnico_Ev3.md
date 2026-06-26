@@ -175,19 +175,19 @@ subgraph Local["💻 Entorno de Simulación Local"]
 subgraph Consumidores["⚙️ Procesamiento local y Contención"]
             C[streaming_consumer.py <br> Ingestor Web]
             D[aforo_consumer.py <br> Ingestor IoT]
-            
+          
             C_Buf["Búfer en Memoria <br> (Locking Thread Queue)"]
             D_Buf["Búfer en Memoria <br> (Locking Thread Queue)"]
-            
+          
             C -->|"Buffer 10s/50tx"| C_Buf
             D -->|"Buffer 10s/8ev"| D_Buf
         end
-        
+      
         subgraph Frontend["🎨 Serving Layer: Frontends Ejecutivos"]
             App_Streamlit[App Streamlit <br> Port 8501]
             App_React[Vite + React SPA <br> Port 3000/5173]
             API_FastAPI[FastAPI Backend Proxy <br> Port 8000]
-            
+          
             App_React -->|"REST"| API_FastAPI
         end
     end
@@ -202,9 +202,9 @@ subgraph BigQuery["BigQuery Data Warehouse (cordillerabi)"]
             BQ_Batch[(fact_ventas <br> 1.2M Batch Histórico)]
             BQ_Stream_Web[(fact_sesiones_web_streaming <br> Capa Speed)]
             BQ_Stream_IoT[(fact_aforo_streaming <br> Capa IoT)]
-            
+          
             BQ_View{fact_sesiones_web <br> Vista Deduplicada}
-            
+          
             BQ_Batch --> BQ_View
             BQ_Stream_Web --> BQ_View
         end
@@ -235,10 +235,10 @@ BQ_Batch -->|"Datos Entrenamiento"| Model_LGB
 
 BQ_View -->|"Query directa"| App_Streamlit
     BQ_Stream_IoT -->|"Query directa"| App_Streamlit
-    
+  
     BQ_View -->|"Query endpoints"| API_FastAPI
     BQ_Stream_IoT -->|"Query endpoints"| API_FastAPI
-    
+  
     ML_Model -.->|"Predicciones"| API_FastAPI
     API_FastAPI -.->|"/api/ml/predict"| App_React
 
@@ -284,12 +284,12 @@ Para evitar que ejecuciones múltiples del pipeline dupliquen logs de transaccio
 
 Para complementar la telemetría web con datos del mundo físico, se diseñó una capa de sensores IoT que simula la ocupación en las **30 sucursales físicas** de Grupo Cordillera, distribuidas estratégicamente en 4 zonas geográficas:
 
-| Zona     | Regiones                                          | Sucursales | Ejemplos                                      |
-| :------- | :------------------------------------------------ | :--------- | :-------------------------------------------- |
-| **Norte**   | XV, I, II, III, IV                                | 5          | Arica, Iquique, Antofagasta, Copiapó, La Serena |
-| **Centro**  | V, RM, VI, VII                                    | 12         | Santiago, Viña del Mar, Rancagua, Talca       |
-| **Sur**     | XVI, VIII, IX, XIV, X                             | 9          | Concepción, Temuco, Valdivia, Puerto Montt    |
-| **Austral** | XI, XII                                           | 2          | Coyhaique, Punta Arenas                       |
+| Zona              | Regiones              | Sucursales | Ejemplos                                         |
+| :---------------- | :-------------------- | :--------- | :----------------------------------------------- |
+| **Norte**   | XV, I, II, III, IV    | 5          | Arica, Iquique, Antofagasta, Copiapó, La Serena |
+| **Centro**  | V, RM, VI, VII        | 12         | Santiago, Viña del Mar, Rancagua, Talca         |
+| **Sur**     | XVI, VIII, IX, XIV, X | 9          | Concepción, Temuco, Valdivia, Puerto Montt      |
+| **Austral** | XI, XII               | 2          | Coyhaique, Punta Arenas                          |
 
 * **Tópico Pub/Sub:** `projects/cordillerabi/topics/aforo-topic`.
 * **Suscripción:** `projects/cordillerabi/subscriptions/aforo-subscription`.
@@ -516,15 +516,20 @@ El notebook está diseñado para ejecutarse como un **Vertex AI Pipeline** progr
 ## 10. Origen de Datos, Desafíos de Realismo y Conflictos de Simulación
 
 ### 10.1. Generación Ética de Datos Sintéticos con Modelos de IA
+
 Para posibilitar la simulación de este ecosistema omnicanal de Big Data, se generaron datasets sintéticos utilizando diversos modelos de Inteligencia Artificial Generativa: **Gemini 3.5 Flash, Gemini 1.5 Pro, Claude Opus 4.6 y DeepSeek V4 Flash**. La declaración explícita del origen sintético de estos datos es un imperativo ético y de transparencia en ingeniería de datos, garantizando que el entorno no exponga información real confidencial de ninguna entidad, pero manteniendo la estructura semántica idónea para validar los pipelines.
 
 ### 10.2. Anomalía de Distribución Inicial (El Falso Equilibrio)
+
 Un error crítico en la etapa inicial del proyecto fue el diseño de scripts que generaban ventas uniformes entre todos los locales comerciales. Esto provocó dos conflictos principales:
+
 1. **Volúmenes de Facturación Irreales:** Al simular ventas altas y constantes de forma uniforme en más de 30 locales, los ingresos consolidados escalaron a cifras absurdas de billones de pesos, alejándose de un escenario financiero de retail viable.
 2. **Gráficos Planos y Pérdida de Valor Analítico:** Un gráfico de participación donde todos los locales venden exactamente el mismo porcentaje carece de utilidad para la toma de decisiones. Para subsanar esto, se aplicaron distribuciones de **Pareto y Zipf**, forzando asimetría donde el canal digital (E-Commerce) absorbe el ~22% de las transacciones y las tiendas físicas compiten de forma realista.
 
 ### 10.3. Visualización Acotada (UX) vs. Integridad del Data Warehouse
+
 Durante el desarrollo del panel de control, surgió el conflicto de cómo representar las sucursales. El caso de negocio contempla **31 locales activos** (IDs del 0 al 30, confirmados físicamente en BigQuery).
+
 * **El error de ingeniería a evitar:** Eliminar o filtrar registros de locales con menores ingresos de la base de datos o de las predicciones de Machine Learning (LightGBM) hubiese sido un fallo metodológico grave, alterando la veracidad y completitud del Data Warehouse.
 * **La solución de visualización (UX/UI):** Se optó por mantener la integridad total de los 31 locales para las consultas y el entrenamiento del modelo de ML, pero limitar la visualización gráfica de los dashboards a las **8 sucursales con mayor volumen de ventas**. Esto evita la saturación visual en la UI, garantizando un diseño limpio y ejecutivo sin comprometer el procesamiento de datos del backend.
 
@@ -532,14 +537,14 @@ Durante el desarrollo del panel de control, surgió el conflicto de cómo repres
 
 ## 11. Diferencias entre la Propuesta de Diseño y la Implementación Final
 
-| Componente                            | Propuesta de Diseño (Ev1/Ev2)        | Implementación Final Real (Ev3)                                                   | Justificación de Ingeniería                                                                                                                                 |
-| :------------------------------------ | :------------------------------------ | :--------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Motor de Procesamiento**      | Cloud Dataflow (Apache Beam)          | Python Micro-batching local                                                        | GCP Sandbox tiene deshabilitada la facturación, impidiendo levantar VMs de Dataflow en la nube.                                                              |
-| **Método de Ingesta BQ**       | Streaming Inserts (`insertAll` API) | Load Jobs en lotes en memoria (`load_table_from_json`)                           | Las inserciones streaming están restringidas en la capa gratuita de BigQuery. Los Load Jobs son libres y permitidos.                                         |
-| **Control de Procesos**         | Orquestadores nativos de GCP          | PID Lock local y logs de auditoría                                                | Evita ejecuciones paralelas concurrentes accidentales que contaminen la veracidad de BigQuery en la simulación.                                              |
-| **Distribución de Frecuencia** | Datos aleatorios uniformes            | Distribuciones de Pareto y Zipf                                                    | Corrige la uniformidad matemática previa que generaba gráficos de barra completamente planos y poco realistas.                                              |
-| **IoT / Sensores**              | No contemplado                        | Pipeline de aforo con Pub/Sub + BigQuery + dashboard                               | Expande el alcance del proyecto para incluir datos físicos de tienda, aumentando la variedad (5Vs) y el realismo del caso de negocio.                        |
-| **Frontend**                    | Looker Studio                         | Streamlit + React + Vite + FastAPI                                                 | Looker Studio quedó como diseño conceptual; se priorizaron dashboards programáticos (Streamlit para prototipado rápido, React para interfaz producción). |
+| Componente                            | Propuesta de Diseño (Ev1/Ev2)        | Implementación Final Real (Ev3)                             | Justificación de Ingeniería                                                                                                                                                                                    |
+| :------------------------------------ | :------------------------------------ | :----------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Motor de Procesamiento**      | Cloud Dataflow (Apache Beam)          | Python Micro-batching local                                  | GCP Sandbox tiene deshabilitada la facturación, impidiendo levantar VMs de Dataflow en la nube.                                                                                                                 |
+| **Método de Ingesta BQ**       | Streaming Inserts (`insertAll` API) | Load Jobs en lotes en memoria (`load_table_from_json`)     | Las inserciones streaming están restringidas en la capa gratuita de BigQuery. Los Load Jobs son libres y permitidos.                                                                                            |
+| **Control de Procesos**         | Orquestadores nativos de GCP          | PID Lock local y logs de auditoría                          | Evita ejecuciones paralelas concurrentes accidentales que contaminen la veracidad de BigQuery en la simulación.                                                                                                 |
+| **Distribución de Frecuencia** | Datos aleatorios uniformes            | Distribuciones de Pareto y Zipf                              | Corrige la uniformidad matemática previa que generaba gráficos de barra completamente planos y poco realistas.                                                                                                 |
+| **IoT / Sensores**              | No contemplado                        | Pipeline de aforo con Pub/Sub + BigQuery + dashboard         | Expande el alcance del proyecto para incluir datos físicos de tienda, aumentando la variedad (5Vs) y el realismo del caso de negocio.                                                                           |
+| **Frontend**                    | Looker Studio                         | Streamlit + React + Vite + FastAPI                           | Looker Studio quedó como diseño conceptual; se priorizaron dashboards programáticos (Streamlit para prototipado rápido, React para interfaz producción).                                                    |
 | **Machine Learning**            | Propuesta conceptual (MLOps)          | Notebook LightGBM + endpoint `/api/ml/predict` + React tab | Se implementó un modelo real de forecasting servido vía API REST con visualización en dashboard, reemplazando la sección meramente aspiracional de MLOps con artefactos concretos, entrenados y funcionales. |
 
 ---
