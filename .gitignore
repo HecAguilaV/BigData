@@ -1,0 +1,15 @@
+# Ignore everything (including hidden folders like .venv)
+*
+.*
+
+# Except these
+!README.md
+!.gitignore
+!Unidad2/
+!Unidad2/**
+
+# Ignore specific items inside Unidad2
+Unidad2/docs/Chuleta_Defensa.md
+Unidad2/Evaluacion/instrucciones/
+Unidad2/data/sesiones_web.json
+Unidad2/data/ventas_historicas.csv
