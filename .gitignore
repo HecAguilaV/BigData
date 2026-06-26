@@ -1,5 +1,8 @@
 # Ignore everything
 *
+Examen_Transversal/instrucciones/
+Examen_Transversal/evidencias/
+
 
 # Except these
 !README.md
