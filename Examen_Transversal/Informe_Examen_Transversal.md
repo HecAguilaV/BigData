@@ -469,6 +469,10 @@ El Grupo Cordillera está sometido a las normativas de protección de datos pers
 
 ## 9. Reportes y Visualizaciones (Paneles de Control)
 
+A continuación se presenta la interfaz del panel de control ejecutivo diseñado para el análisis consolidado de las operaciones de Grupo Cordillera:
+
+![Dashboard Ejecutivo - Grupo Cordillera](Dashboard_Batch.png)
+
 ### 9.1. Dashboard Streamlit
 
 Se implementó un dashboard interactivo en **Streamlit** (`app.py`) con cuatro pestañas:
