@@ -20,7 +20,7 @@ Unidad2/docs/Chuleta_Defensa.md
 Unidad2/data/*.csv
 Unidad2/data/*.json
 
-# Unidad3 generated artifacts — everything else is tracked
+# Unidad3 generated artifacts
 Unidad3/**/__pycache__/
 Unidad3/frontend/node_modules/
 Unidad3/frontend/dist/
