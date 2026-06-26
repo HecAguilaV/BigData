@@ -1,32 +1,17 @@
-# Local AI runtime state
-.atl/
-.DS_Store
-*.pem
-/data/
-Unidad1/
-Unidad2/
-openspec/
-.gga
-AGENTS.md
-Google Agent Kit.md
-skill-registry.md
-.skill-registry.cache.json
-google-cloud-sdk/*
+# Ignore everything (including hidden folders like .venv)
+*
+.*
 
-# Original Ev2 ignored files
-Unidad2/2.1.1 Ingesta de Datos Estructurados y no Estructurados en GCP.pptx
-Unidad2/Evaluacion/
-Unidad2/docs/Chuleta_Defensa.md
-Unidad2/data/*.csv
-Unidad2/data/*.json
+# Except these
+!README.md
+!.gitignore
+!Unidad3/
+!Unidad3/**
+!*.sh
 
-# Unidad3 generated artifacts
+# Ignore specific items inside Unidad3
 Unidad3/**/__pycache__/
+Unidad3/Evaluacion3/
 Unidad3/frontend/node_modules/
 Unidad3/frontend/dist/
 Unidad3/notebooks/.ipynb_checkpoints/
-Unidad3/Evaluacion3/*.pdf
-Unidad3/Evaluacion3/InstruccionesEv3.md
-
-# Ignore gitignore itself
-.gitignore
