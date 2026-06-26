@@ -26,6 +26,7 @@ Unidad3/frontend/node_modules/
 Unidad3/frontend/dist/
 Unidad3/notebooks/.ipynb_checkpoints/
 Unidad3/Evaluacion3/*.pdf
+Unidad3/Evaluacion3/InstruccionesEv3.md
 
 # Ignore gitignore itself
 .gitignore
