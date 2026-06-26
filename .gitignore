@@ -1,0 +1,11 @@
+# Ignore everything (including hidden folders like .venv)
+*
+.*
+
+# Except these
+!README.md
+!Unidad1/
+!Unidad1/CasoSemestral.md
+!Unidad1/Informe Propuesta Big Data.pdf
+!Unidad1/Transformación Digital_ Migración a Big Data en GCP para Grupo Cordillera.pptx
+!.gitignore
