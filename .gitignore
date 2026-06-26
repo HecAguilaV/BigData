@@ -1,0 +1,8 @@
+# Ignore everything
+*
+
+# Except these
+!README.md
+!Examen_Transversal/
+!Examen_Transversal/**
+!.gitignore
