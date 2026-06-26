@@ -1,11 +1,13 @@
 # Ignore everything
 *
-Examen_Transversal/instrucciones/
-Examen_Transversal/evidencias/
-
 
 # Except these
 !README.md
 !Examen_Transversal/
-!Examen_Transversal/**
+!Examen_Transversal/0.CasoSemestral.md
+!Examen_Transversal/1.Informe-Migracion_BigData.md
+!Examen_Transversal/2.Informe-Pipeline_Batch.md
+!Examen_Transversal/3.Informe-Streaming.md
+!Examen_Transversal/Informe_Examen_Transversal.md
+!Examen_Transversal/Informe_Examen_Transversal.pdf
 !.gitignore
