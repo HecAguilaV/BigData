@@ -484,6 +484,10 @@ Se implementó un dashboard interactivo en **Streamlit** (`app.py`) con cuatro p
 
 El dashboard utiliza un sistema de diseño CSS basado en variables para soporte de tema oscuro/claro. Los datos batch se cachean mediante `@st.cache_data` para evitar reconsultas a BigQuery. Los datos streaming, aforo y ML se refrescan automáticamente cada **60 segundos**.
 
+A continuación se presenta una captura de pantalla de la pestaña de monitoreo en tiempo real en Streamlit (Capa Speed):
+
+![Monitoreo en Tiempo Real - Streamlit](Dashboard_Streaming.png)
+
 ### 9.2. Frontend React + Vite con FastAPI
 
 Como alternativa moderna y de nivel producción, se desarrolló un frontend en **React + Vite + TypeScript** con Tailwind CSS, Recharts y Leaflet:
@@ -493,6 +497,10 @@ Como alternativa moderna y de nivel producción, se desarrolló un frontend en *
 * **Mapa nacional interactivo:** Las 30 sucursales geolocalizadas sobre mapa Leaflet con marcadores coloreados por ocupación (verde/amarillo/rojo).
 * **Segmentación por zona:** Las sucursales se agrupan por zona geográfica (Norte, Centro, Sur, Austral) con cards individuales y barra de progreso.
 * **Stack moderno:** Vite como bundler, Tailwind CSS para estilos utilitarios, Recharts para gráficos, Leaflet para mapas interactivos, Lucide React para iconografía, pnpm como gestor de paquetes.
+
+A continuación se presenta una captura de pantalla del panel de control web desarrollado en React (Capa Speed y visualización en tiempo real):
+
+![Dashboard de Producción - React](Dashboard_React_Streaming.png)
 
 ### 9.3. Campos Calculados e Indicadores Clave (KPIs)
 
