@@ -379,6 +379,10 @@ gs://grupo-cordillera-datalake-cordillerabi/
 
 Para no incurrir en costos de almacenamiento duplicado de datos crudos, se definieron **tablas externas** en BigQuery mediante DDL SQL bajo el dataset `grupo_cordillera_raw`. Esto permite mapear la estructura de los archivos de Cloud Storage y consultarlos directamente usando sintaxis SQL estándar de BigQuery.
 
+A continuación se muestra la configuración del dataset de datos crudos (`grupo_cordillera_raw`) mapeando el almacenamiento en Cloud Storage:
+
+![Estructura de Datasets Raw en BigQuery](evidencias/img/DatasetRAW.png)
+
 ### 6.2. Políticas de Archivado Automático (Ciclo de Vida del Dato)
 
 Para mitigar costos de almacenamiento de datos de retención regulatoria histórica, se establece una política de ciclo de vida (Object Lifecycle Management) en Cloud Storage:
@@ -400,6 +404,10 @@ Se implementaron recetas en Cloud Dataprep. Las operaciones aplicadas incluyen:
 * **Filtros de calidad:** Eliminación de registros con montos negativos (`monto_clp <= 0`), cantidades faltantes o erróneas (`cantidad <= 0` o valores nulos).
 
 Las recetas de Cloud Dataprep son compiladas automáticamente a código de **Apache Beam** y ejecutadas de forma nativa sobre **Google Cloud Dataflow** de manera serverless.
+
+A continuación se detalla el flujo de limpieza y la receta aplicada sobre Cloud Dataprep:
+
+![Flujo de Limpieza en Cloud Dataprep](evidencias/img/DataPrep.png)
 
 ### 7.2. Limpieza Streaming en Vuelo (Python Consumers)
 
@@ -450,6 +458,10 @@ Los datos procesados se consolidan en el dataset `grupo_cordillera_dw` (región 
 | `fact_aforo_streaming` | IoT | `timestamp`, `id_sucursal`, `nombre_sucursal`, `lat`, `lng`, `capacidad_maxima`, `aforo_actual`, `personas_entran`, `personas_salen`, `porcentaje_ocupacion`, `zona`, `region` |
 | `fact_sesiones_web` | Vista | Unión deduplicada de batch y streaming |
 
+A continuación se muestra el esquema del Data Warehouse persistido bajo el dataset `grupo_cordillera_dw`:
+
+![Tablas Consolidadas en grupo_cordillera_dw](evidencias/img/DatasetDW.png)
+
 > [!IMPORTANT]
 > **Consistencia de Regiones:** El dataset de destino `grupo_cordillera_dw` fue creado estrictamente en la misma región que las fuentes crudas (`us-central1`). BigQuery restringe la lectura y escritura cruzada entre diferentes regiones geográficas.
 
@@ -471,7 +483,7 @@ El Grupo Cordillera está sometido a las normativas de protección de datos pers
 
 A continuación se presenta la interfaz del panel de control ejecutivo diseñado para el análisis consolidado de las operaciones de Grupo Cordillera:
 
-![Dashboard Ejecutivo - Grupo Cordillera](Dashboard_Batch.png)
+![Dashboard Ejecutivo - Grupo Cordillera](evidencias/img/Dashboard_Batch.png)
 
 ### 9.1. Dashboard Streamlit
 
@@ -486,7 +498,7 @@ El dashboard utiliza un sistema de diseño CSS basado en variables para soporte 
 
 A continuación se presenta una captura de pantalla de la pestaña de monitoreo en tiempo real en Streamlit (Capa Speed):
 
-![Monitoreo en Tiempo Real - Streamlit](Dashboard_Streaming.png)
+![Monitoreo en Tiempo Real - Streamlit](evidencias/img/Dashboard_Streaming.png)
 
 ### 9.2. Frontend React + Vite con FastAPI
 
@@ -498,9 +510,22 @@ Como alternativa moderna y de nivel producción, se desarrolló un frontend en *
 * **Segmentación por zona:** Las sucursales se agrupan por zona geográfica (Norte, Centro, Sur, Austral) con cards individuales y barra de progreso.
 * **Stack moderno:** Vite como bundler, Tailwind CSS para estilos utilitarios, Recharts para gráficos, Leaflet para mapas interactivos, Lucide React para iconografía, pnpm como gestor de paquetes.
 
-A continuación se presenta una captura de pantalla del panel de control web desarrollado en React (Capa Speed y visualización en tiempo real):
+A continuación se presentan capturas de pantalla de las diferentes interfaces del panel de control web de React:
 
-![Dashboard de Producción - React](Dashboard_React_Streaming.png)
+**A. CRM Ejecutivo - Portada de Resumen**
+Consolida los KPIs de la Capa Batch con navegación en tiempo real:
+
+![CRM Ejecutivo - Portada de Resumen](evidencias/img/DashBoardResumen.png)
+
+**B. Ocupación y Aforos IoT**
+Mapa interactivo de aforo nacional geolocalizado en vivo a través de la Capa IoT:
+
+![Monitoreo de Aforo Físico - Leaflet IoT Map](evidencias/img/DashBoardAforos_IoT.png)
+
+**C. Módulo ML Forecast**
+Pronóstico predictivo de ventas consumido directamente desde la API REST de LightGBM:
+
+![Módulo Predictivo - Forecasting LightGBM](evidencias/img/DashBoardMLForecast.png)
 
 ### 9.3. Campos Calculados e Indicadores Clave (KPIs)
 
@@ -591,6 +616,10 @@ gcloud ai models upload \
 * **Registro Distribuido en GCP:** Las recetas de Cloud Dataprep ejecutadas sobre Cloud Dataflow registran todo el log detallado en **Cloud Logging**, permitiendo auditar ejecuciones pasadas.
 * **Trazabilidad del Dato:** La vista SQL de deduplicación mantiene la columna `origen` (BATCH/STREAMING) para rastrear la procedencia de cada registro.
 
+A continuación se muestra el explorador de Cloud Logging evidenciando el registro y auditoría distribuida de las ejecuciones del simulador:
+
+![Registro de Actividad en Cloud Logging](evidencias/img/ExploradorRegistros.png)
+
 ### 11.4. Validación de Datos, Métricas de Calidad y Trazabilidad (Requisito d)
 
 Para cumplir con el aseguramiento de calidad exigido por la pauta del examen final, se auditaron los volúmenes de carga y la presencia de valores nulos o corruptos en el Data Warehouse. La siguiente tabla presenta las métricas reales consolidadas de las bases de datos de BigQuery:
@@ -603,6 +632,10 @@ Para cumplir con el aseguramiento de calidad exigido por la pauta del examen fin
 | `fact_aforo_streaming` | IoT | Pub/Sub IoT Sensors | 68.760 | 0 | 0 | **100% Integridad** | Sensores físicos de tiendas en tiempo real. |
 
 *Nota:* Los 6.980 registros nulos detectados en el campo `id_anonimo_cliente` de la tabla `fact_sesiones_web_streaming` corresponden estrictamente a lógica de negocio: representan usuarios visitantes no autenticados en el e-commerce (clientes anónimos), lo cual es el comportamiento estándar esperado de navegación web y no constituye un fallo de calidad.
+
+A continuación se presenta la validación y persistencia de los registros en tiempo real directamente en el explorador analítico de BigQuery:
+
+![Consulta SQL de Ingesta en BigQuery](evidencias/img/BigQuery.png)
 
 **Reglas de Validación y Limpieza en Vuelo (Capa Speed):**
 
